@@ -1,4 +1,6 @@
 import React, { useState, createContext, useContext, useMemo, useEffect } from 'react';
+import { db } from './firebase'; // Firebase-Datenbankinstanz importieren
+import { collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore'; // Firestore-Funktionen
 
 // Sprachkontext erstellen
 const LanguageContext = createContext();
@@ -114,8 +116,8 @@ function LanguageProvider({ children }) {
       editFilament: 'Filament bearbeiten',
       saveFilament: 'Filament speichern',
       cancelEditFilament: 'Bearbeitung abbrechen',
-      noAccessories: 'No accessories added yet.',
-      noTools: 'No tools added yet.',
+      noAccessories: 'Noch kein Zubehör hinzugefügt.',
+      noTools: 'Noch keine Werkzeuge hinzugefügt.',
       addAccessory: 'Zubehör hinzufügen',
       addTool: 'Werkzeug hinzufügen',
       manageFilamentTypes: 'Filament Typen verwalten',
@@ -515,15 +517,15 @@ function LanguageProvider({ children }) {
       saveProduct: 'ذخیره محصول',
       productSavedSuccess: 'محصول با موفقیت ذخیره شد!',
       viewProductsReport: 'گزارش محصولات',
-      noProducts: 'هنوز محصولی ذخیره نشده است.',
+      noProducts: 'No products saved yet.',
       selectProduct: 'انتخاب محصول',
-      productImageURL: 'URL تصویر محصول',
-      noImage: 'تصویری موجود نیست',
-      imageError: 'بارگیری تصویر انجام نشد',
-      lowStockWarning: 'موجودی کمتر از 100 گرم! لطفا دوباره سفارش دهید.',
-      quantityNote: '(وزن باقیمانده این قرقره)',
-      consumedWeight: 'مصرف شده (گرم)',
-      remainingWeight: 'باقیمانده (گرم)',
+      productImageURL: 'Produktbild URL',
+      noImage: 'Kein Bild vorhanden',
+      imageError: 'Bild konnte nicht geladen werden',
+      lowStockWarning: 'Bestand unter 100g! Bitte nachbestellen.',
+      quantityNote: '(Restgewicht dieser Rolle)',
+      consumedWeight: 'Verbraucht (گرم)',
+      remainingWeight: 'Verbleibend (گرم)',
       close: 'بستن',
       saveSalesPrice: 'ذخیره قیمت فروش',
       generateDescription: '✨ تولید توضیحات',
@@ -2185,7 +2187,7 @@ function Reports() {
                          </th>
                        </tr>
                      </thead>
-                     <tbody className="bg-white divide-y divide-200">
+                     <tbody className="bg-white divide-y divide-gray-200">
                        {totalBalanceSummary.map((item, index) => (
                          <tr key={index}>
                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
@@ -3101,7 +3103,7 @@ function FinishedProducts() {
 // Komponente für die Einstellungen
 function Settings() {
   const { translations, language } = useLanguage();
-  const { users, setUsers, inventory, expenses, people, products, setInventory, setExpenses, setPeople, setProducts } = useData(); // Destructure products here
+  const { users, setUsers, inventory, expenses, people, products, setInventory, setExpenses, setPeople, setProducts } = useData();
 
   // Annahme: Der aktuell eingeloggte Benutzer ist der erste in der Liste (für diese Demo)
   const currentUser = users[0];
@@ -3154,13 +3156,12 @@ function Settings() {
 
   // Backup erstellen
   const handleCreateBackup = () => {
-    // Access products directly from the destructured variable
     const dataToBackup = {
       users: users,
       inventory: inventory,
       expenses: expenses,
       people: people,
-      products: products, // products is now directly in scope
+      products: products,
     };
     const jsonString = JSON.stringify(dataToBackup, null, 2);
     const blob = new Blob([jsonString], { type: 'application/json' });
@@ -3186,7 +3187,7 @@ function Settings() {
     reader.onload = (e) => {
       try {
         const restoredData = JSON.parse(e.target.result);
-        console.log('Restored Data:', restoredData); // Log the parsed data
+        console.log('Restored Data:', restoredData);
         if (restoredData.users && restoredData.inventory && restoredData.expenses && restoredData.people && restoredData.products) {
           setUsers(restoredData.users);
           setInventory(restoredData.inventory);
@@ -3199,7 +3200,7 @@ function Settings() {
         }
       } catch (error) {
         setBackupRestoreMessage(translations[language].restoreError + ' (Fehler beim Parsen der Datei)');
-        console.error('Error parsing backup file:', error); // Log the parsing error
+        console.error('Error parsing backup file:', error);
       }
     };
     reader.onerror = (error) => {
