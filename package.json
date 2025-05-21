@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "main": "main.js",
   "private": true,
-  "homepage": "https://DEINE-SUBDOMAIN",
+  "homepage": "https://app.create3dlab.com",
   "dependencies": {
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
