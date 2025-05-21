@@ -1,0 +1,50 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+# testing
+/coverage
+
+# production
+/build
+
+# misc
+.DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build-Ordner für React
+/build
+
+# Ausgabeordner für Electron
+/dist
+
+# Node-Module (werden von npm install wiederhergestellt)
+/node_modules
+
+# Log-Dateien von npm
+npm-debug.log*
+.npm/
+.node_repl_history
+
+# Lokale Umgebungsvariablen
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Weitere temporäre Dateien oder Caches
+.DS_Store
+*.log
+*.tgz
+.vscode/
